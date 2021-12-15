@@ -23,7 +23,7 @@ int main(int argc, const char * argv[]) {
         
         char text[1024];
         ssize_t characters_count = read(STDIN_FILENO, text, 1024);
-        compile_command(text, characters_count);
+        compile_command(text, characters_count, &command);
         
         int pid = fork();
         

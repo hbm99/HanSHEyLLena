@@ -9,6 +9,9 @@
 #define command_h
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 enum {normal, unknown, cd, cin, cout, ccout, hist, quit};
 
@@ -21,12 +24,12 @@ struct Command{
     char* text;
 };
 
-void init_command(void);
+void init_command(struct Command *command);
 
-void tokenize(char *text, size_t characters_count);
+void tokenize(char *text, size_t characters_count, struct Command *command);
 
-void parse_command(void);
+void parse_command(struct Command *command);
 
-void compile_command(char *text, size_t characters_count);
+void compile_command(char *text, size_t characters_count, struct Command *command);
 
 #endif /* command_h */
