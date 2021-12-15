@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/fcntl.h>
 
 enum {normal, unknown, cd, cin, cout, ccout, hist, quit};
 

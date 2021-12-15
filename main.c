@@ -15,11 +15,12 @@ int running = 1;
 struct Command command;
 char* path;
 char* history[10];
+int history_count = 0;
 
 int main(int argc, const char * argv[]) {
     while (running) {
         path = getcwd(path, 500);
-        write(STDOUT_FILENO,"hanSHeyLLena $ ", 15);
+        write(STDOUT_FILENO,"prompt $ ", 15);
         
         char text[1024];
         ssize_t characters_count = read(STDIN_FILENO, text, 1024);
