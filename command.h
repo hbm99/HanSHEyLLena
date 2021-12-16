@@ -13,6 +13,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/fcntl.h>
+#include "history.h"
+
+struct Command* command;
 
 enum {normal, unknown, cd, cin, cout, ccout, hist, quit};
 
@@ -25,12 +28,14 @@ struct Command{
     char* text;
 };
 
-void init_command(struct Command *command);
+void save_command(struct History* history);
 
-void tokenize(char *text, size_t characters_count, struct Command *command);
+void init_command(void);
 
-void parse_command(struct Command *command);
+void tokenize(char *text, size_t characters_count);
 
-void compile_command(char *text, size_t characters_count, struct Command *command);
+void parse_command(struct History* history);
+
+struct Command* compile_command(char *text, size_t characters_count, struct History* history);
 
 #endif /* command_h */
