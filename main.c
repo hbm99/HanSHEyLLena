@@ -46,6 +46,7 @@ int main(int argc, const char * argv[]) {
             
             if (command->type == quit) {
                 running = 0;
+                return 0;
             }
             else {
                 if (compiled_command->built_in) {

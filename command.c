@@ -88,7 +88,7 @@ void parse_command(struct History* history) {
             command->built_in = 0;
             return;
         }
-        else if (strncmp(token, "exit", 4)) {
+        else if (strncmp(token, "exit", 4) == 0) {
             command->type = quit;
         }
     }
