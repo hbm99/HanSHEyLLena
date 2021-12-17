@@ -15,9 +15,6 @@ void save_command(struct History* history) {
     
     history->record[(history->start_index + history->count) % 10] = command.text;
 
-    // Declare the file pointer
-    FILE *txtPointer;
-     
     // Get the data to be written in file
     char* dataToBeWritten = history->record[(history->start_index + history->count) % 10];
  

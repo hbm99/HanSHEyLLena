@@ -16,6 +16,8 @@
 #include "history.h"
 
 struct Command command;
+// Declare the file pointer
+FILE *txtPointer;
 
 enum {normal, unknown, cd, cin, cout, ccout, hist, quit};
 

@@ -13,19 +13,50 @@ int running = 1;
 char* original_path;
 struct History* history;
 
-int main(int argc, const char * argv[]) {
-
-    original_path = getcwd(original_path, 500);
-
-    //Initializing history
+//Initializing history
+void init_history() {
     history = malloc(sizeof(struct History*));
     history->count = 0;
     history->start_index = 0;
     history->txt_path = strcat(original_path, "/history.txt");
 
+/*     // Declare the variable for the data to be read from file
+    char line[50] = {0};
+    // Open the existing file history.txt using fopen()
+    // in read mode using "r" attribute
+    txtPointer = fopen(history->txt_path, "r");
+    // Check if this filePointer is null
+    // which maybe if the file does not exist
+    if (txtPointer == NULL)
+        printf("History file failed to open.\n");
+    else
+    {
+        // Read the line from the file
+        // using fgets() method
+        while(fgets(line, 50, txtPointer) != NULL)
+        {
+            // Record the line
+            history->record[history->count++] = line;
+        }
+        // Closing the file using fclose()
+        fclose(txtPointer);
+    }
+    for (int i = 0; i < history->count; i++)
+    {
+        printf("%s", history->record[i]); 
+    } */
+    
+}
+
+int main(int argc, const char * argv[]) {
+
+    original_path = getcwd(original_path, 500);
+    
+    init_history();
+
     while (running) {
         write(STDOUT_FILENO,"prompt $ ", 9);
-
+        
         char _text[1024];
         ssize_t characters_count = read(STDIN_FILENO, _text, 1024);
         
@@ -62,24 +93,21 @@ int main(int argc, const char * argv[]) {
                 else if (command.type == hist) {
                     
                     //Imprimiendo history.txt
-                    
-                    // Declare the file pointer
-                    FILE *filePointer;
                     // Declare the variable for the data to be read from file
                     char line[50] = {0};
                     // Open the existing file history.txt using fopen()
                     // in read mode using "r" attribute
-                    filePointer = fopen(history->txt_path, "r");
+                    txtPointer = fopen(history->txt_path, "r");
                     // Check if this filePointer is null
                     // which maybe if the file does not exist
-                    if (filePointer == NULL)
+                    if (txtPointer == NULL)
                         printf("History file failed to open.\n");
                     else
                     {
                         int line_count = 0;
                         // Read the line from the file
                         // using fgets() method
-                        while(fgets(line, 50, filePointer) != NULL)
+                        while(fgets(line, 50, txtPointer) != NULL)
                         {
                             // Print the line
                             printf("%d. %s", ++line_count, line);
@@ -88,7 +116,7 @@ int main(int argc, const char * argv[]) {
                                 printf("\n");
                         }
                         // Closing the file using fclose()
-                        fclose(filePointer);
+                        fclose(txtPointer);
                     }
                 }
                 exit(0);
