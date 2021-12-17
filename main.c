@@ -17,7 +17,6 @@ int main(int argc, const char * argv[]) {
     history = malloc(sizeof(struct History*));
     history->count = 0;
     history->start_index = 0;
-    int count = 0;
     while (running) {
         path = getcwd(path, 500);
         write(STDOUT_FILENO,"prompt $ ", 9);
