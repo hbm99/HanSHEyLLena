@@ -55,12 +55,35 @@ int main(int argc, const char * argv[]) {
                     }
                 }
                 else if (command.type == hist) {
-                    for (int i = 0; i < 10; i++) {
-                        if (history->record[i] == NULL) {
-                            break;
+                    
+                    //Imprimiendo history.txt
+
+                    // Declare the file pointer
+                    FILE *filePointer;
+                    // Declare the variable for the data to be read from file
+                    char line[50] = {0};
+                    // Open the existing file history.txt using fopen()
+                    // in read mode using "r" attribute
+                    filePointer = fopen("/Users/hanselblanco/Documents/School/2do/Curso_a_distancia_2do_semestre/SO/shell/my_project/hanSHeyLLena_xcodeproj/hanSHeyLLena/hanSHeyLLena/history.txt", "r");
+                    // Check if this filePointer is null
+                    // which maybe if the file does not exist
+                    if (filePointer == NULL)
+                        printf("history file failed to open. Please, you should specify the path to the history.txt file.\n");
+                    else
+                    {
+                        int line_count = 0;
+                        // Read the line from the file
+                        // using fgets() method
+                        while(fgets(line, 50, filePointer) != NULL)
+                        {
+                            // Print the line
+                            printf("%d. %s", ++line_count, line);
+
+                            if (line[strlen(line) - 1] != '\n')
+                                printf("\n");
                         }
-                        printf("%d: ", i + 1);
-                        printf("%s \n", history->record[i]);
+                        // Closing the file using fclose()
+                        fclose(filePointer);
                     }
                 }
                 exit(0);

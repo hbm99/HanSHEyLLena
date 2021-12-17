@@ -13,8 +13,12 @@ void save_command(struct History* history) {
     }
     
     history->record[(history->start_index + history->count) % 10] = command.text;
+
+    //esto va en el txt
+    printf("%d: ", (history->start_index + history->count) % 10);
+    printf("%s\n", history->record[(history->start_index + history->count) % 10]);
     
-    if (history->count == 10 )
+    if (history->count == 10)
         history->start_index = (history->start_index + 1) % 10;
     else
         history->count++;
