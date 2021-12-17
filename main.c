@@ -10,17 +10,17 @@
 #include "command.h"
 
 int running = 1;
-char* path;
+char* original_path;
 struct History* history;
 
 int main(int argc, const char * argv[]) {
+    original_path = getcwd(original_path, 500);
     history = malloc(sizeof(struct History*));
     history->count = 0;
     history->start_index = 0;
     while (running) {
-        path = getcwd(path, 500);
         write(STDOUT_FILENO,"prompt $ ", 9);
-        
+
         char _text[1024];
         ssize_t characters_count = read(STDIN_FILENO, _text, 1024);
         
@@ -64,11 +64,11 @@ int main(int argc, const char * argv[]) {
                     char line[50] = {0};
                     // Open the existing file history.txt using fopen()
                     // in read mode using "r" attribute
-                    filePointer = fopen("/Users/hanselblanco/Documents/School/2do/Curso_a_distancia_2do_semestre/SO/shell/my_project/hanSHeyLLena_xcodeproj/hanSHeyLLena/hanSHeyLLena/history.txt", "r");
+                    filePointer = fopen(strcat(original_path, "/history.txt"), "r");
                     // Check if this filePointer is null
                     // which maybe if the file does not exist
                     if (filePointer == NULL)
-                        printf("history file failed to open. Please, you should specify the path to the history.txt file.\n");
+                        printf("History file failed to open.\n");
                     else
                     {
                         int line_count = 0;
