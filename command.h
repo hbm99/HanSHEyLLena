@@ -36,6 +36,6 @@ void tokenize(char *text, size_t characters_count);
 
 void parse_command(struct History* history);
 
-struct Command* compile_command(char *text, size_t characters_count, struct History* history);
+void compile_command(char *text, size_t characters_count, struct History* history);
 
 #endif /* command_h */

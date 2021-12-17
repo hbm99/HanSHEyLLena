@@ -81,7 +81,7 @@ void parse_command(struct History* history) {
         else if (strncmp(token, "again", 5) == 0) {
             char* val = command->tokens[i + 1];
             if ((long)val > 0 && (long)val <= history->count) {
-                command = compile_command(history->record[(history->start_index + (long)val - 1) % 10], strlen(history->record[(history->start_index + (long)val - 1) % 10]) + 1, history);
+                compile_command(history->record[(history->start_index + (long)val - 1) % 10], strlen(history->record[(history->start_index + (long)val - 1) % 10]) + 1, history);
                 return;
             }
             command->type = unknown;
@@ -95,9 +95,9 @@ void parse_command(struct History* history) {
     save_command(history);
 }
 
-struct Command* compile_command(char *text, size_t characters_count, struct History* history) {
+void compile_command(char *text, size_t characters_count, struct History* history) {
     init_command();
     tokenize(text, characters_count);
     parse_command(history);
-    return command;
+    //return command;
 }

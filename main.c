@@ -10,7 +10,6 @@
 
 int running = 1;
 char* path;
-struct Command* compiled_command;
 struct History* history;
 
 int main(int argc, const char * argv[]) {
@@ -35,26 +34,26 @@ int main(int argc, const char * argv[]) {
             }
         }
         
-        compiled_command = compile_command(text, characters_count, history);
+        compile_command(text, characters_count, history);
         
         int pid = fork();
         
         //child
         if (!pid) {
-            dup2(compiled_command->in_fd, STDIN_FILENO);
-            dup2(compiled_command->out_fd, STDOUT_FILENO);
+            dup2(command->in_fd, STDIN_FILENO);
+            dup2(command->out_fd, STDOUT_FILENO);
             
             if (command->type == quit) {
                 running = 0;
                 return 0;
             }
             else {
-                if (compiled_command->built_in) {
-                    if (execvp(compiled_command->tokens[0], (char *const *) compiled_command->tokens) == -1) {
+                if (command->built_in) {
+                    if (execvp(command->tokens[0], (char *const *) command->tokens) == -1) {
                         printf("Unknown comand \n");
                     }
                 }
-                else if (compiled_command->type == hist) {
+                else if (command->type == hist) {
                     for (int i = 0; i < 10; i++) {
                         if (history->record[i] == NULL) {
                             break;
@@ -70,7 +69,7 @@ int main(int argc, const char * argv[]) {
             wait(NULL);
         }
         
-        if (compiled_command->type == unknown) {
+        if (command->type == unknown) {
             printf("Unkonwn comand \n");
         }
     }
