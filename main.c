@@ -6,6 +6,7 @@
 //
 
 #include <sys/wait.h>
+#include <signal.h>
 #include "command.h"
 
 int running = 1;
@@ -16,6 +17,7 @@ int main(int argc, const char * argv[]) {
     history = malloc(sizeof(struct History*));
     history->count = 0;
     history->start_index = 0;
+    int count = 0;
     while (running) {
         path = getcwd(path, 500);
         write(STDOUT_FILENO,"prompt $ ", 9);
@@ -40,20 +42,20 @@ int main(int argc, const char * argv[]) {
         
         //child
         if (!pid) {
-            dup2(command->in_fd, STDIN_FILENO);
-            dup2(command->out_fd, STDOUT_FILENO);
+            dup2(command.in_fd, STDIN_FILENO);
+            dup2(command.out_fd, STDOUT_FILENO);
             
-            if (command->type == quit) {
+            if (command.type == quit) {
                 running = 0;
-                return 0;
+                kill(getppid(), SIGKILL);
             }
             else {
-                if (command->built_in) {
-                    if (execvp(command->tokens[0], (char *const *) command->tokens) == -1) {
+                if (command.built_in) {
+                    if (execvp(command.tokens[0], (char *const *) command.tokens) == -1) {
                         printf("Unknown comand \n");
                     }
                 }
-                else if (command->type == hist) {
+                else if (command.type == hist) {
                     for (int i = 0; i < 10; i++) {
                         if (history->record[i] == NULL) {
                             break;
@@ -68,10 +70,9 @@ int main(int argc, const char * argv[]) {
         else {
             wait(NULL);
         }
-        
-        if (command->type == unknown) {
+        if (command.type == unknown) {
             printf("Unkonwn comand \n");
         }
     }
-    
+    return 0;
 }

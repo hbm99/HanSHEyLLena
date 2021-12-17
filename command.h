@@ -15,7 +15,7 @@
 #include <sys/fcntl.h>
 #include "history.h"
 
-struct Command* command;
+struct Command command;
 
 enum {normal, unknown, cd, cin, cout, ccout, hist, quit};
 
