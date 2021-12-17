@@ -12,6 +12,7 @@ struct History{
     int count;
     int start_index;
     char* record[10];
+    char* txt_path;
 };
 
 

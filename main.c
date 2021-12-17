@@ -14,10 +14,15 @@ char* original_path;
 struct History* history;
 
 int main(int argc, const char * argv[]) {
+
     original_path = getcwd(original_path, 500);
+
+    //Initializing history
     history = malloc(sizeof(struct History*));
     history->count = 0;
     history->start_index = 0;
+    history->txt_path = strcat(original_path, "/history.txt");
+
     while (running) {
         write(STDOUT_FILENO,"prompt $ ", 9);
 
@@ -57,14 +62,14 @@ int main(int argc, const char * argv[]) {
                 else if (command.type == hist) {
                     
                     //Imprimiendo history.txt
-
+                    
                     // Declare the file pointer
                     FILE *filePointer;
                     // Declare the variable for the data to be read from file
                     char line[50] = {0};
                     // Open the existing file history.txt using fopen()
                     // in read mode using "r" attribute
-                    filePointer = fopen(strcat(original_path, "/history.txt"), "r");
+                    filePointer = fopen(history->txt_path, "r");
                     // Check if this filePointer is null
                     // which maybe if the file does not exist
                     if (filePointer == NULL)

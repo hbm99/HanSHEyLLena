@@ -8,15 +8,38 @@
 #include "command.h"
 
 void save_command(struct History* history) {
+    
     if (command.text[0] == ' ') {
         return;
     }
     
     history->record[(history->start_index + history->count) % 10] = command.text;
 
-    //esto va en el txt
-    printf("%d: ", (history->start_index + history->count) % 10);
-    printf("%s\n", history->record[(history->start_index + history->count) % 10]);
+    // Declare the file pointer
+    FILE *txtPointer;
+     
+    // Get the data to be written in file
+    char* dataToBeWritten = history->record[(history->start_index + history->count) % 10];
+ 
+    // Open the existing file GfgTest.c using fopen()
+    // in write mode using "w" attribute
+    txtPointer = fopen(history->txt_path, "a");
+     
+    // Check if this filePointer is null
+    // which maybe if the file does not exist
+    if (txtPointer == NULL) {
+        printf("History file failed to open.");
+    }
+    else {
+        // Write the dataToBeWritten into the file
+        if (strlen(dataToBeWritten) > 0) {
+            // writing in the file using fputs()
+            fputs(dataToBeWritten, txtPointer);
+            fputs("\n", txtPointer);
+        }
+        // Closing the file using fclose()
+        fclose(txtPointer);
+    }
     
     if (history->count == 10)
         history->start_index = (history->start_index + 1) % 10;

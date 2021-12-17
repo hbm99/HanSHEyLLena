@@ -1,2 +1,8 @@
 ls
 cd ..
+pwd
+history
+ls
+history
+exit
+ls
