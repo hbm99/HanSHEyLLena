@@ -19,32 +19,30 @@ void init_history() {
     history->count = 0;
     history->start_index = 0;
     history->txt_path = strcat(original_path, "/history.txt");
-
-/*     // Declare the variable for the data to be read from file
-    char line[50] = {0};
-    // Open the existing file history.txt using fopen()
-    // in read mode using "r" attribute
+    
+    
     txtPointer = fopen(history->txt_path, "r");
-    // Check if this filePointer is null
-    // which maybe if the file does not exist
-    if (txtPointer == NULL)
-        printf("History file failed to open.\n");
-    else
+
+    size_t length = 50;
+    for(int i = 0; i < 10; i++)                                                                
     {
-        // Read the line from the file
-        // using fgets() method
-        while(fgets(line, 50, txtPointer) != NULL)
-        {
-            // Record the line
-            history->record[history->count++] = line;
-        }
-        // Closing the file using fclose()
-        fclose(txtPointer);
+        history->record[i] = NULL;
+        getline(&history->record[i], &length, txtPointer);
+        if (history->record[i] == NULL)
+            break;
+        history->count++;
+        printf("%d : ", history->count);
+        printf("%s", history->record[i]);                  
     }
-    for (int i = 0; i < history->count; i++)
+    
+    fclose(txtPointer);
+
+    printf("%d", history->count);
+
+    for (int j = 0; j < history->count; j++)
     {
-        printf("%s", history->record[i]); 
-    } */
+        printf("%s", history->record[j]);
+    }
     
 }
 
