@@ -10,11 +10,13 @@
 #include "command.h"
 
 int running = 1;
+int commands_counter;
 char* original_path;
 struct History history;
 
 //Initializing history
 void init_history() {
+
     history.count = 0;
     history.start_index = 0;
     history.txt_path = (char *)malloc(500);
@@ -34,6 +36,52 @@ void init_history() {
     fclose(txtPointer);
 }
 
+char** parse_line() {
+        
+    char _text[1024];
+    ssize_t characters_count = read(STDIN_FILENO, _text, 1024);
+    
+    // checking if there is a comment (#) or pipes (|) in the line
+    char text[characters_count];
+    int pipes_counter = 0;
+    for (int i = 0; i < characters_count; i++) {
+        if (_text[i] == '|') {
+            pipes_counter++;
+        }
+        if (_text[i] == '#') {
+            characters_count = i;
+            break;
+        }
+        else {
+            text[i] = _text[i];
+        }
+    }
+
+    char** list_commands_texts = (char**)malloc((pipes_counter + 1) * sizeof(char*));
+    for (int i = 0; i < pipes_counter + 1; i++)
+        list_commands_texts[i] = (char*)malloc(characters_count);
+
+    int list_commands_texts_index = 0;
+    char* accum = (char*)malloc(characters_count);
+    for (int i = 0, j = 0; i < characters_count; i++, j++)
+    {
+        if (text[i] == '|')
+        {
+            list_commands_texts[list_commands_texts_index] = strcat(accum, "\n");
+            j = -1;
+            accum = (char*)malloc(characters_count);
+            list_commands_texts_index++;
+            continue;
+        }
+        accum[j] = text[i];
+    }
+    list_commands_texts[list_commands_texts_index] = accum;
+
+    commands_counter = pipes_counter + 1;
+
+    return list_commands_texts;
+}
+
 int main(int argc, const char * argv[]) {
 
     original_path = getcwd(original_path, 500);
@@ -41,28 +89,18 @@ int main(int argc, const char * argv[]) {
     init_history();
 
     while (running) {
+        
         write(STDOUT_FILENO,"prompt $ ", 9);
         
-        char _text[1024];
-        ssize_t characters_count = read(STDIN_FILENO, _text, 1024);
+        char** list_commands_texts = parse_line();
         
-        char text[characters_count];
-        for (int i = 0; i < characters_count; i++) {
-            if (_text[i] == '#') {
-                characters_count = i;
-                break;
-            }
-            else {
-                text[i] = _text[i];
-            }
-        }
-        
-        compile_command(text, characters_count, &history);
+        compile_command(list_commands_texts[0], strlen(list_commands_texts[0]), &history);
         
         int pid = fork();
         
         //child
         if (!pid) {
+
             dup2(command.in_fd, STDIN_FILENO);
             dup2(command.out_fd, STDOUT_FILENO);
             

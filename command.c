@@ -16,6 +16,7 @@ void save_command(struct History* history) {
     history->record[(history->start_index + history->count) % 10] = command.text;
     
     if (history->count == 10) {
+
         history->start_index = (history->start_index + 1) % 10;
 
         txtPointer = fopen(history->txt_path, "w+");
@@ -33,14 +34,9 @@ void save_command(struct History* history) {
 
                 if (strlen(dataToBeWritten) > 0) {
                     fputs(dataToBeWritten, txtPointer);
-                    // if (i == 8)
-                    // {
-                    //     fputs("\n", txtPointer);
-                    // }
                     if (dataToBeWritten[strlen(dataToBeWritten) - 1] != '\n') {
                         fputs("\n", txtPointer);
-                    }
-                        
+                    }       
                 }
                 fclose(txtPointer);
             }
@@ -48,6 +44,7 @@ void save_command(struct History* history) {
         
     }
     else {
+
         char* dataToBeWritten = history->record[(history->start_index + history->count) % 10];   
 
         txtPointer = fopen(history->txt_path, "a");
@@ -73,7 +70,6 @@ void save_command(struct History* history) {
 void init_command() {
     command.in_fd = STDIN_FILENO;
     command.out_fd = STDOUT_FILENO;
-    command.text = "";
     command.type = normal;
     command.built_in = 1;
     command.tokens = (char**)calloc(20, sizeof(char*));
