@@ -73,7 +73,7 @@ int main(int argc, const char * argv[]) {
             else {
                 if (command.built_in) {
                     if (execvp(command.tokens[0], (char *const *) command.tokens) == -1) {
-                        printf("Unknown comand \n");
+                        printf("Unknown command \n");
                     }
                 }
                 else if (command.type == hist) {
@@ -112,7 +112,7 @@ int main(int argc, const char * argv[]) {
             wait(NULL);
         }
         if (command.type == unknown) {
-            printf("Unkonwn comand \n");
+            printf("Unkonwn command \n");
         }
     }
     return 0;
