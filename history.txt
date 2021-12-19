@@ -1,3 +1,9 @@
 ls
 cd ..
 pwd
+exit
+history
+ls
+cd ..
+ls
+exity
