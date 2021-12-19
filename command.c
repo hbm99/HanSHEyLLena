@@ -12,36 +12,62 @@ void save_command(struct History* history) {
     if (command.text[0] == ' ') {
         return;
     }
-    
-    history->record[(history->start_index + history->count) % 10] = command.text;
 
-    // Get the data to be written in file
-    char* dataToBeWritten = history->record[(history->start_index + history->count) % 10];
- 
-    // Open the existing file GfgTest.c using fopen()
-    // in write mode using "w" attribute
-    txtPointer = fopen(history->txt_path, "a");
-     
-    // Check if this filePointer is null
-    // which maybe if the file does not exist
-    if (txtPointer == NULL) {
-        printf("History file failed to open.");
+    history->record[(history->start_index + history->count) % 10] = command.text;
+    
+    if (history->count == 10) {
+        history->start_index = (history->start_index + 1) % 10;
+
+        txtPointer = fopen(history->txt_path, "w+");
+        fclose(txtPointer);
+        
+        for (int i = 0; i < 10; i++)
+        {
+            char* dataToBeWritten = history->record[(history->start_index + i) % 10];   
+            txtPointer = fopen(history->txt_path, "a");
+
+            if (txtPointer == NULL) {
+                printf("History file failed to open.");
+            }
+            else {
+
+                if (strlen(dataToBeWritten) > 0) {
+                    fputs(dataToBeWritten, txtPointer);
+                    // if (i == 8)
+                    // {
+                    //     fputs("\n", txtPointer);
+                    // }
+                    if (dataToBeWritten[strlen(dataToBeWritten) - 1] != '\n') {
+                        fputs("\n", txtPointer);
+                    }
+                        
+                }
+                fclose(txtPointer);
+            }
+        }
+        
     }
     else {
-        // Write the dataToBeWritten into the file
-        if (strlen(dataToBeWritten) > 0) {
-            // writing in the file using fputs()
-            fputs(dataToBeWritten, txtPointer);
-            fputs("\n", txtPointer);
+        char* dataToBeWritten = history->record[(history->start_index + history->count) % 10];   
+
+        txtPointer = fopen(history->txt_path, "a");
+
+        if (txtPointer == NULL) {
+            printf("History file failed to open.");
         }
-        // Closing the file using fclose()
-        fclose(txtPointer);
-    }
-    
-    if (history->count == 10)
-        history->start_index = (history->start_index + 1) % 10;
-    else
+        else {
+
+            if (strlen(dataToBeWritten) > 0) {
+               
+               fputs(dataToBeWritten, txtPointer);
+               fputs("\n", txtPointer);
+            }
+            
+            fclose(txtPointer);
+        }
         history->count++;
+    }
+        
 }
 
 void init_command() {
@@ -50,14 +76,14 @@ void init_command() {
     command.text = "";
     command.type = normal;
     command.built_in = 1;
-    command.tokens = calloc(20, sizeof(char*));
-    command.text = malloc(1024);
+    command.tokens = (char**)calloc(20, sizeof(char*));
+    command.text = (char*)malloc(1024);
 }
 
 void tokenize(char *text, size_t characters_count) {
     strncpy(command.text, text, characters_count - 1);
     
-    char* text_clone = malloc(strlen(command.text));
+    char* text_clone = (char*)malloc(strlen(command.text));
     strcpy(text_clone, command.text);
     char* token = strtok(text_clone, " ");
     command.tokens[0] = token;

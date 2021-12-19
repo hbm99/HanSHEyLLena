@@ -1,9 +1,10 @@
+cd ..
 ls
 cd ..
-pwd
-exit
+ls
+history
 history
 ls
-cd ..
-ls
-exity
+history
+history
+exit

@@ -15,13 +15,11 @@ struct History history;
 
 //Initializing history
 void init_history() {
-    int count = 0;
-    
     history.count = 0;
     history.start_index = 0;
-    history.txt_path = malloc(500);
+    history.txt_path = (char *)malloc(500);
     history.txt_path = strcat(original_path, "/history.txt");
-
+    
     txtPointer = fopen(history.txt_path, "r");
     
     size_t length;
