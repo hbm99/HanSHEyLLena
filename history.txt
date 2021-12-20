@@ -1,10 +1,10 @@
+pwd
 history
 exit
-pwd
+1
+ls
 cd ..
-pwd
-ls
-history
 ls
 history
 exit
+ping localHost

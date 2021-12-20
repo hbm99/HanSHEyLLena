@@ -13,6 +13,7 @@ int running = 1;
 int commands_counter;
 char* original_path;
 struct History history;
+struct Command* command_list;
 
 //Initializing history
 void init_history() {
@@ -82,6 +83,27 @@ char** parse_line() {
     return list_commands_texts;
 }
 
+void fill_command_list(char** list_commands_texts) {
+
+    command_list = (struct Command*)malloc(commands_counter * sizeof(struct Command));
+    for (int i = 0; i < commands_counter; i++)
+    {
+        compile_command(list_commands_texts[i], strlen(list_commands_texts[i]), &history);
+        command_list[i] = command;
+    }
+}
+
+int** init_multipipe() {
+    
+    int** pipeline;
+    pipeline = (int**)malloc((commands_counter - 1) * sizeof(int*));
+    for (int i = 0; i < commands_counter - 1; i++) {
+        pipeline[i] = (int *) malloc(2 * sizeof(int));
+        pipe(pipeline[i]);
+    }
+    return pipeline;
+}
+
 int main(int argc, const char * argv[]) {
 
     original_path = getcwd(original_path, 500);
@@ -89,69 +111,104 @@ int main(int argc, const char * argv[]) {
     init_history();
 
     while (running) {
-        
-        write(STDOUT_FILENO,"prompt $ ", 9);
+
+        write(STDOUT_FILENO, "prompt $ ", 9);
         
         char** list_commands_texts = parse_line();
-        
-        compile_command(list_commands_texts[0], strlen(list_commands_texts[0]), &history);
-        
-        int pid = fork();
-        
-        //child
-        if (!pid) {
 
-            dup2(command.in_fd, STDIN_FILENO);
-            dup2(command.out_fd, STDOUT_FILENO);
-            
-            if (command.type == quit) {
-                running = 0;
-                kill(getppid(), SIGKILL);
-            }
-            else {
-                if (command.built_in) {
-                    if (execvp(command.tokens[0], (char *const *) command.tokens) == -1) {
-                        printf("Unknown command \n");
+        fill_command_list(list_commands_texts);
+
+        int** pipeline = init_multipipe();
+        int pipes_counter = commands_counter - 1;
+
+        int command_index = 0;
+        for (int i = 0; i < commands_counter; i++)
+        {
+            struct Command current_command = command_list[i];
+
+            int pid = fork();
+            switch (pid)
+            {
+            case 0:
+                if (pipes_counter > 0)
+                {
+                    if (i == 0)
+                    {
+                        close(pipeline[i][0]);
+                        dup2(pipeline[i][1], 1);
                     }
-                }
-                else if (command.type == hist) {
-                    
-                    //Imprimiendo history.txt
-                    // Declare the variable for the data to be read from file
-                    char line[50] = {0};
-                    // Open the existing file history.txt using fopen()
-                    // in read mode using "r" attribute
-                    txtPointer = fopen(history.txt_path, "r");
-                    // Check if this filePointer is null
-                    // which maybe if the file does not exist
-                    if (txtPointer == NULL)
-                        printf("History file failed to open.\n");
+                    else if (i == commands_counter - 1)
+                    {
+                        close(pipeline[i - 1][1]);
+                        dup2(pipeline[i - 1][0], 0);
+                        close(pipeline[i - 1][0]);
+                    }
                     else
                     {
-                        int line_count = 0;
-                        // Read the line from the file
-                        // using fgets() method
-                        while(fgets(line, 50, txtPointer) != NULL)
-                        {
-                            // Print the line
-                            printf("%d. %s", ++line_count, line);
-
-                            if (line[strlen(line) - 1] != '\n')
-                                printf("\n");
-                        }
-                        // Closing the file using fclose()
-                        fclose(txtPointer);
+                        close(pipeline[i][0]);
+                        close(pipeline[i - 1][1]);
+                        dup2(pipeline[i - 1][0], 0);
+                        dup2(pipeline[i][1], 1);
                     }
                 }
-                exit(0);
+
+                dup2(current_command.in_fd, STDIN_FILENO);
+                dup2(current_command.out_fd, STDOUT_FILENO);
+
+                if (current_command.type == quit) {
+                    running = 0;
+                    kill(getppid(), SIGKILL);
+                }
+                else {
+                    if (current_command.built_in) {
+                        if (execvp(current_command.tokens[0], (char *const *) current_command.tokens) == -1) {
+                            printf("Unknown command \n");
+                        }
+                    }
+                    else if (current_command.type == hist) {
+                        
+                        char line[50] = {0};
+                        
+                        txtPointer = fopen(history.txt_path, "r");
+                        
+                        if (txtPointer == NULL)
+                            printf("History file failed to open.\n");
+                        else
+                        {
+                            int line_count = 0;
+                            
+                            while(fgets(line, 50, txtPointer) != NULL)
+                            {
+                                printf("%d. %s", ++line_count, line);
+
+                                if (line[strlen(line) - 1] != '\n')
+                                    printf("\n");
+                            }
+
+                            fclose(txtPointer);
+                        }
+                    }
+                    exit(0);
+                }
+                break;
+            
+            default:
+                if (i < pipes_counter)
+                {
+                    close(pipeline[i][1]);
+                }
+                break;
             }
+            if (current_command.type == unknown) {
+                printf("Unkonwn command \n");
+            }
+            command_index = i;
         }
-        else {
+        for (int i = 0; i < command_index; i++)
+        {
             wait(NULL);
         }
-        if (command.type == unknown) {
-            printf("Unkonwn command \n");
-        }
     }
+
     return 0;
 }
