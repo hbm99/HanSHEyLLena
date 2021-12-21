@@ -204,7 +204,7 @@ int main(int argc, const char * argv[]) {
             }
             command_index = i;
         }
-        for (int i = 0; i < command_index; i++)
+        for (int i = 0; i <= command_index; i++)
         {
             wait(NULL);
         }

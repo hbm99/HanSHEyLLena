@@ -1,10 +1,10 @@
+exit
+ping localHost
 pwd
+123
 history
 exit
 1
-ls
-cd ..
-ls
 history
-exit
 ping localHost
+history
