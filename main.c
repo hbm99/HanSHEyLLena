@@ -8,12 +8,30 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include "command.h"
+#include <signal.h>
 
 int running = 1;
 int commands_counter;
 char* original_path;
 struct History history;
 struct Command* command_list;
+int signal_counter = 1;
+
+void  INThandler(int sig)
+{
+   
+        signal(sig, SIG_IGN);
+        if(signal_counter == 2)
+        {
+            pid_t iPid = getpid(); 
+            kill(iPid, SIGKILL);
+        }
+        else{
+            signal_counter++;
+            signal(SIGINT, INThandler);
+        }      
+    
+}
 
 //Initializing history
 void init_history() {
@@ -106,6 +124,8 @@ int** init_multipipe() {
 
 int main(int argc, const char * argv[]) {
 
+    signal(SIGINT, INThandler);
+
     original_path = getcwd(original_path, 500);
     
     init_history();
@@ -127,6 +147,7 @@ int main(int argc, const char * argv[]) {
             struct Command current_command = command_list[i];
 
             int pid = fork();
+         
             switch (pid)
             {
             case 0:

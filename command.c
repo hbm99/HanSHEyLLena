@@ -104,13 +104,13 @@ void parse_command(struct History* history) {
         }
         else if (strncmp(token, ">>", 2) == 0) {
             command.type = ccout;
-            int file = open(command.tokens[i + 1], O_APPEND);
+            int file = open(command.tokens[i + 1], O_APPEND |  O_CREAT , 0644 );
             command.out_fd = file;
         }
         else if (strncmp(token, ">", 1) == 0) {
             command.type = cout;
             command.tokens[i] = NULL;
-            int file = open(command.tokens[i + 1], O_WRONLY | O_TRUNC | O_CREAT, 0644);
+            int file = open(command.tokens[i + 1], O_WRONLY | O_TRUNC |  O_CREAT, 0644);
             command.out_fd = file;
         }
         else if (strncmp(token, "cd", 2) == 0) {
