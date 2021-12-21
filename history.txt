@@ -1,10 +1,10 @@
-pwd
-history
-exit
-1
 ls
-cd ..
+cat > love.txt
 ls
-history
-exit
-ping localHost
+ls
+cat > love.txt
+ls
+ls
+cat > love.txt
+ls
+rm love.txt

@@ -110,7 +110,7 @@ void parse_command(struct History* history) {
         else if (strncmp(token, ">", 1) == 0) {
             command.type = cout;
             command.tokens[i] = NULL;
-            int file = open(command.tokens[i + 1], O_WRONLY, O_TRUNC);
+            int file = open(command.tokens[i + 1], O_WRONLY | O_TRUNC | O_CREAT, 0644);
             command.out_fd = file;
         }
         else if (strncmp(token, "cd", 2) == 0) {
