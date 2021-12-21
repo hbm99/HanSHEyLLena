@@ -147,7 +147,7 @@ int main(int argc, const char * argv[]) {
             struct Command current_command = command_list[i];
 
             int pid = fork();
-         
+        
             switch (pid)
             {
             case 0:
