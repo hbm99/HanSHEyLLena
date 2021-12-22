@@ -1,10 +1,3 @@
-//
-//  command.c
-//  hanSHeyLLena
-//
-//  Created by Hansel Blanco on 9/12/21.
-//
-
 #include "command.h"
 
 void save_command(struct History* history) {
@@ -41,7 +34,6 @@ void save_command(struct History* history) {
                 fclose(txtPointer);
             }
         }
-        
     }
     else {
 
@@ -128,7 +120,18 @@ void parse_command(struct History* history) {
             {
                 int value = atoi(command.tokens[i + 1]);
                 if (value > 0 && value <= history->count) {
-                    compile_command(history->record[(history->start_index + value - 1) % 10], strlen(history->record[(history->start_index + value - 1) % 10]) + 1, history);
+
+                    char* line = history->record[(history->start_index + value - 1) % 10];
+                    char* no_eol_line = (char*)malloc(sizeof(line));
+                    for (int i = 0; i < strlen(line); i++)
+                    {
+                        if (line[i] == '\n')
+                        {
+                            break;
+                        }
+                        no_eol_line[i] = line[i];
+                    }
+                    compile_command(no_eol_line, strlen(no_eol_line) + 1, history);
                     return;
                 }
             }
@@ -150,12 +153,12 @@ void parse_command(struct History* history) {
             char str[1000];
             txtPointer = fopen(strcat(original_path, strcat("/help/", strcat(help_type, ".txt"))), "r");
             if (txtPointer == NULL)
-                printf("Help file failed to open.\n");
+                printf("Some help file failed to open.\n");
             else
             {
                 while(!feof(txtPointer)) {
                     fgets(str, 999, txtPointer);
-                    printf("%s",str);
+                    printf("%s", str);
                 }
             }
             fclose(txtPointer);

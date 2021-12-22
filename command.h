@@ -1,10 +1,3 @@
-//
-//  command.h
-//  hanSHeyLLena
-//
-//  Created by Hansel Blanco on 9/12/21.
-//
-
 #ifndef command_h
 #define command_h
 
@@ -16,7 +9,6 @@
 #include "history.h"
 
 struct Command command;
-// Declare the file pointer
 FILE *txtPointer;
 char* original_path;
 

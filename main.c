@@ -1,10 +1,3 @@
-//
-//  main.c
-//  hanSHeyLLena
-//
-//  Created by Hansel Blanco on 9/12/21.
-//
-
 #include <sys/wait.h>
 #include <signal.h>
 #include "command.h"
@@ -50,7 +43,7 @@ void init_history() {
         getline(&history.record[i], &length, txtPointer);
         if (strcmp(history.record[i], "") == 0)
             break;
-        history.count++;           
+        history.count++;
     }
     fclose(txtPointer);
 }

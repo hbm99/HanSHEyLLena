@@ -1,10 +1,3 @@
-//
-//  history.h
-//  hanSHeyLLena
-//
-//  Created by Hansel Blanco on 15/12/21.
-//
-
 #ifndef history_h
 #define history_h
 
