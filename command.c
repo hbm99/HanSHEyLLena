@@ -110,7 +110,7 @@ void parse_command(struct History* history) {
         else if (strncmp(token, ">", 1) == 0) {
             command.type = cout;
             command.tokens[i] = NULL;
-            int file = open(command.tokens[i + 1], O_WRONLY | O_TRUNC |  O_CREAT, 0644);
+            int file = open(command.tokens[i + 1], O_WRONLY | O_TRUNC | O_CREAT, 0644);
             command.out_fd = file;
         }
         else if (strncmp(token, "cd", 2) == 0) {
@@ -124,10 +124,13 @@ void parse_command(struct History* history) {
             command.built_in = 0;
         }
         else if (strncmp(token, "again", 5) == 0) {
-            int value = atoi(command.tokens[i + 1]);
-            if (value > 0 && value <= history->count) {
-                compile_command(history->record[(history->start_index + value - 1) % 10], strlen(history->record[(history->start_index + value - 1) % 10]) + 1, history);
-                return;
+            if (command.tokens[i + 1] != NULL)
+            {
+                int value = atoi(command.tokens[i + 1]);
+                if (value > 0 && value <= history->count) {
+                    compile_command(history->record[(history->start_index + value - 1) % 10], strlen(history->record[(history->start_index + value - 1) % 10]) + 1, history);
+                    return;
+                }
             }
             command.type = unknown;
             command.built_in = 0;
@@ -136,6 +139,29 @@ void parse_command(struct History* history) {
         else if (strncmp(token, "exit", 4) == 0) {
             command.type = quit;
         }
+        else if (strncmp(token, "help", 4) == 0)
+        {
+            char* help_type = "";
+            if (command.tokens[i + 1] != NULL)
+                help_type = command.tokens[i + 1];
+            else
+                help_type = "help";
+
+            char str[1000];
+            txtPointer = fopen(strcat(original_path, strcat("/help/", strcat(help_type, ".txt"))), "r");
+            if (txtPointer == NULL)
+                printf("Help file failed to open.\n");
+            else
+            {
+                while(!feof(txtPointer)) {
+                    fgets(str, 999, txtPointer);
+                    printf("%s",str);
+                }
+            }
+            fclose(txtPointer);
+            command.type = help;
+        }
+        
     }
     save_command(history);
 }

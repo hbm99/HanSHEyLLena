@@ -12,7 +12,6 @@
 
 int running = 1;
 int commands_counter;
-char* original_path;
 struct History history;
 struct Command* command_list;
 int signal_counter = 1;
@@ -21,12 +20,13 @@ void  INThandler(int sig)
 {
    
         signal(sig, SIG_IGN);
-        if(signal_counter == 2)
+        if (signal_counter == 2)
         {
             pid_t iPid = getpid(); 
             kill(iPid, SIGKILL);
         }
-        else{
+        else 
+        {
             signal_counter++;
             signal(SIGINT, INThandler);
         }      
@@ -205,9 +205,8 @@ int main(int argc, const char * argv[]) {
                                 if (line[strlen(line) - 1] != '\n')
                                     printf("\n");
                             }
-
-                            fclose(txtPointer);
                         }
+                        fclose(txtPointer);
                     }
                     exit(0);
                 }
@@ -221,7 +220,7 @@ int main(int argc, const char * argv[]) {
                 break;
             }
             if (current_command.type == unknown) {
-                printf("Unkonwn command \n");
+                printf("Unknown command \n");
             }
             command_index = i;
         }

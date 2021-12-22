@@ -18,8 +18,9 @@
 struct Command command;
 // Declare the file pointer
 FILE *txtPointer;
+char* original_path;
 
-enum {normal, unknown, cd, cin, cout, ccout, hist, quit};
+enum {normal, unknown, cd, cin, cout, ccout, hist, quit, help};
 
 struct Command{
     int type;
