@@ -182,7 +182,7 @@ int main(int argc, const char * argv[]) {
                     kill(getppid(), SIGKILL);
                 }
                 else {
-                    if (current_command.built_in) {
+                    if (!current_command.built_in) {
                         if (execvp(current_command.tokens[0], (char *const *) current_command.tokens) == -1) {
                             printf("Unknown command \n");
                         }

@@ -82,7 +82,7 @@ void init_command() {
     command.in_fd = STDIN_FILENO;
     command.out_fd = STDOUT_FILENO;
     command.type = normal;
-    command.built_in = 1;
+    command.built_in = 0;
     command.tokens = (char**)calloc(20, sizeof(char*));
     command.text = (char*)malloc(1024);
 }
@@ -126,13 +126,13 @@ void parse_command(struct History* history) {
         }
         else if (strncmp(token, "cd", 2) == 0) {
             command.type = cd;
-            command.built_in = 0;
+            command.built_in = 1;
             chdir(command.tokens[i + 1]);
             break;
         }
         else if (strncmp(token, "history", 7) == 0) {
             command.type = hist;
-            command.built_in = 0;
+            command.built_in = 1;
         }
         else if (strncmp(token, "again", 5) == 0) {
             if (command.tokens[i + 1] != NULL)
@@ -155,15 +155,16 @@ void parse_command(struct History* history) {
                 }
             }
             command.type = unknown;
-            command.built_in = 0;
+            command.built_in = 1;
             return;
         }
         else if (strncmp(token, "exit", 4) == 0) {
+            command.built_in = 1;
             command.type = quit;
         }
         else if (strncmp(token, "help", 4) == 0)
         {
-            command.built_in = 0;
+            command.built_in = 1;
             command.type = help;
         }
     }
