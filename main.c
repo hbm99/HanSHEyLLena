@@ -177,69 +177,68 @@ int main(int argc, const char * argv[]) {
                 dup2(current_command.in_fd, STDIN_FILENO);
                 dup2(current_command.out_fd, STDOUT_FILENO);
 
-                if (current_command.type == quit) {
+                if (!current_command.built_in) {
+                    if (execvp(current_command.tokens[0], (char *const *) current_command.tokens) == -1) {
+                        printf("Unknown command \n");
+                    }
+                }
+                else if (current_command.type == hist) {
+                    
+                    char line[50] = {0};
+                    
+                    txtPointer = fopen(history.txt_path, "r");
+                    
+                    if (txtPointer == NULL)
+                        printf("History file failed to open.\n");
+                    else
+                    {
+                        int line_count = 0;
+                        
+                        while(fgets(line, 50, txtPointer) != NULL)
+                        {
+                            printf("%d. %s", ++line_count, line);
+
+                            if (line[strlen(line) - 1] != '\n')
+                                printf("\n");
+                        }
+                    }
+                    fclose(txtPointer);
+                }
+                else if (current_command.type == help)
+                {
+                    char* help_type = "";
+                    if (command.tokens[i + 1] != NULL)
+                        help_type = command.tokens[i + 1];
+                    else
+                        help_type = "help";
+                    
+                    char* temp_txt = ".txt";
+                    char* path_with_help = "/help/";
+                    char* help_full_path = concat(original_path, concat(path_with_help, concat(help_type, temp_txt)));
+                    
+                    char str[1000];
+                    txtPointer = fopen(help_full_path, "r");
+                    if (txtPointer == NULL)
+                        printf("Some help file failed to open.\n");
+                    else
+                    {
+                        while(1) 
+                        {
+                            fgets(str, 999, txtPointer);
+                            if (feof(txtPointer))
+                            {
+                                break;
+                            }
+                            printf("%s", str);
+                        }
+                    }
+                    fclose(txtPointer);
+                }
+                else if (current_command.type == quit) {
                     running = 0;
                     kill(getppid(), SIGKILL);
                 }
-                else {
-                    if (!current_command.built_in) {
-                        if (execvp(current_command.tokens[0], (char *const *) current_command.tokens) == -1) {
-                            printf("Unknown command \n");
-                        }
-                    }
-                    else if (current_command.type == hist) {
-                        
-                        char line[50] = {0};
-                        
-                        txtPointer = fopen(history.txt_path, "r");
-                        
-                        if (txtPointer == NULL)
-                            printf("History file failed to open.\n");
-                        else
-                        {
-                            int line_count = 0;
-                            
-                            while(fgets(line, 50, txtPointer) != NULL)
-                            {
-                                printf("%d. %s", ++line_count, line);
-
-                                if (line[strlen(line) - 1] != '\n')
-                                    printf("\n");
-                            }
-                        }
-                        fclose(txtPointer);
-                    }
-                    else if (current_command.type == help)
-                    {
-                        char* help_type = "";
-                        if (command.tokens[i + 1] != NULL)
-                            help_type = command.tokens[i + 1];
-                        else
-                            help_type = "help";
-                        
-                        char* temp_txt = ".txt";
-                        char* path_with_help = "/help/";
-                        char* help_full_path = concat(original_path, concat(path_with_help, concat(help_type, temp_txt)));
-                        
-                        char str[1000];
-                        txtPointer = fopen(help_full_path, "r");
-                        if (txtPointer == NULL)
-                            printf("Some help file failed to open.\n");
-                        else
-                        {
-                            while(1) {
-                                fgets(str, 999, txtPointer);
-                                if (feof(txtPointer))
-                                {
-                                    break;
-                                }
-                                printf("%s", str);
-                            }
-                        }
-                        fclose(txtPointer);
-                    }
-                    exit(0);
-                }
+                exit(0);
                 break;
             default:
                 if (i < pipes_counter)
