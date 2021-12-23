@@ -10,7 +10,6 @@
 
 struct Command command;
 FILE *txtPointer;
-char* original_path;
 
 enum {normal, unknown, cd, cin, cout, ccout, hist, quit, help};
 
@@ -22,6 +21,8 @@ struct Command{
     char** tokens;
     char* text;
 };
+
+char* concat(char* str1, char* str2);
 
 void save_command(struct History* history);
 

@@ -8,6 +8,7 @@ int commands_counter;
 struct History history;
 struct Command* command_list;
 int signal_counter = 1;
+char* original_path;
 
 
 void init_history(void);
@@ -208,10 +209,38 @@ int main(int argc, const char * argv[]) {
                         }
                         fclose(txtPointer);
                     }
+                    else if (current_command.type == help)
+                    {
+                        char* help_type = "";
+                        if (command.tokens[i + 1] != NULL)
+                            help_type = command.tokens[i + 1];
+                        else
+                            help_type = "help";
+                        
+                        char* temp_txt = ".txt";
+                        char* path_with_help = "/help/";
+                        char* help_full_path = concat(original_path, concat(path_with_help, concat(help_type, temp_txt)));
+                        
+                        char str[1000];
+                        txtPointer = fopen(help_full_path, "r");
+                        if (txtPointer == NULL)
+                            printf("Some help file failed to open.\n");
+                        else
+                        {
+                            while(1) {
+                                fgets(str, 999, txtPointer);
+                                if (feof(txtPointer))
+                                {
+                                    break;
+                                }
+                                printf("%s", str);
+                            }
+                        }
+                        fclose(txtPointer);
+                    }
                     exit(0);
                 }
                 break;
-            
             default:
                 if (i < pipes_counter)
                 {

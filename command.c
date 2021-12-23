@@ -163,32 +163,6 @@ void parse_command(struct History* history) {
         }
         else if (strncmp(token, "help", 4) == 0)
         {
-            char* help_type = "";
-            if (command.tokens[i + 1] != NULL)
-                help_type = command.tokens[i + 1];
-            else
-                help_type = "help";
-            
-            char* temp_txt = ".txt";
-            char* path_with_help = "/help/";
-            char* help_full_path = concat(original_path, concat(path_with_help, concat(help_type, temp_txt)));
-            
-            char str[1000];
-            txtPointer = fopen(help_full_path, "r");
-            if (txtPointer == NULL)
-                printf("Some help file failed to open.\n");
-            else
-            {
-                while(1) {
-                    fgets(str, 999, txtPointer);
-                    if (feof(txtPointer))
-                    {
-                        break;
-                    }
-                    printf("%s", str);
-                }
-            }
-            fclose(txtPointer);
             command.built_in = 0;
             command.type = help;
         }
