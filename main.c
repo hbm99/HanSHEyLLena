@@ -14,22 +14,27 @@ char* original_path;
 void init_history(void);
 char** parse_line(void);
 int** init_multipipe(void);
+void free_memory(void);
+
+void free_memory() {
+    free(&history);
+    free(command_list);
+    free(original_path);
+}
 
 void  INThandler(int sig)
-{
-   
-        signal(sig, SIG_IGN);
-        if (signal_counter == 2)
-        {
-            pid_t iPid = getpid(); 
-            kill(iPid, SIGKILL);
-        }
-        else 
-        {
-            signal_counter++;
-            signal(SIGINT, INThandler);
-        }      
-    
+{  
+    signal(sig, SIG_IGN);
+    if (signal_counter == 2)
+    {
+        pid_t iPid = getpid(); 
+        kill(iPid, SIGKILL);
+    }
+    else 
+    {
+        signal_counter++;
+        signal(SIGINT, INThandler);
+    }      
 }
 
 //Initializing history
@@ -236,6 +241,7 @@ int main(int argc, const char * argv[]) {
                 }
                 else if (current_command.type == quit) {
                     running = 0;
+                    free_memory();
                     kill(getppid(), SIGKILL);
                 }
                 exit(0);
@@ -257,6 +263,6 @@ int main(int argc, const char * argv[]) {
             wait(NULL);
         }
     }
-
+    free_memory();
     return 0;
 }

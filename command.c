@@ -108,33 +108,33 @@ void parse_command(struct History* history) {
         char* token = command.tokens[i];
         if (token == NULL)
             break;
-        else if (strncmp(token, "<", 1) == 0) {
+        else if (strlen(token) == 1 && strncmp(token, "<", 1) == 0) {
             command.type = cin;
             int file = open(command.tokens[i + 1], O_RDONLY);
             command.in_fd = file;
         }
-        else if (strncmp(token, ">>", 2) == 0) {
+        else if (strlen(token) == 2 && strncmp(token, ">>", 2) == 0) {
             command.type = ccout;
             int file = open(command.tokens[i + 1], O_APPEND |  O_CREAT , 0644 );
             command.out_fd = file;
         }
-        else if (strncmp(token, ">", 1) == 0) {
+        else if (strlen(token) == 1 && strncmp(token, ">", 1) == 0) {
             command.type = cout;
             command.tokens[i] = NULL;
             int file = open(command.tokens[i + 1], O_WRONLY | O_TRUNC | O_CREAT, 0644);
             command.out_fd = file;
         }
-        else if (strncmp(token, "cd", 2) == 0) {
+        else if (strlen(token) == 2 && strncmp(token, "cd", 2) == 0) {
             command.type = cd;
             command.built_in = 1;
             chdir(command.tokens[i + 1]);
             break;
         }
-        else if (strncmp(token, "history", 7) == 0) {
+        else if (strlen(token) == 7 && strncmp(token, "history", 7) == 0) {
             command.type = hist;
             command.built_in = 1;
         }
-        else if (strncmp(token, "again", 5) == 0) {
+        else if (strlen(token) == 5 && strncmp(token, "again", 5) == 0) {
             if (command.tokens[i + 1] != NULL)
             {
                 int value = atoi(command.tokens[i + 1]);
@@ -158,11 +158,11 @@ void parse_command(struct History* history) {
             command.built_in = 1;
             return;
         }
-        else if (strncmp(token, "exit", 4) == 0) {
+        else if (strlen(token) == 4 && strncmp(token, "exit", 4) == 0) {
             command.built_in = 1;
             command.type = quit;
         }
-        else if (strncmp(token, "help", 4) == 0)
+        else if (strlen(token) == 4 && strncmp(token, "help", 4) == 0)
         {
             command.built_in = 1;
             command.type = help;
