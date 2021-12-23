@@ -9,6 +9,11 @@ struct History history;
 struct Command* command_list;
 int signal_counter = 1;
 
+
+void init_history(void);
+char** parse_line(void);
+int** init_multipipe(void);
+
 void  INThandler(int sig)
 {
    
@@ -32,7 +37,9 @@ void init_history() {
     history.count = 0;
     history.start_index = 0;
     history.txt_path = (char *)malloc(500);
-    history.txt_path = strcat(original_path, "/history.txt");
+    char* path_to_history = (char*)malloc(sizeof(original_path) + 20);
+    strcpy(path_to_history, original_path);
+    history.txt_path = strcat(path_to_history, "/history.txt");
     
     txtPointer = fopen(history.txt_path, "r");
     

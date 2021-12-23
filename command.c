@@ -1,5 +1,24 @@
 #include "command.h"
 
+char* concat(char* str1, char* str2) {
+    char* concatenation = (char*)malloc(1024);
+    int index = 0;
+    while(str1[index] != '\0')
+    {
+        concatenation[index] = str1[index];
+        index++;
+    }
+    int index_str2 = 0;
+    while(str2[index_str2] != '\0')
+    {
+        concatenation[index] = str2[index_str2];
+        index++;
+        index_str2++;
+    }
+    concatenation[index] = '\0';
+    return concatenation;
+}
+
 void save_command(struct History* history) {
     
     if (command.text[0] == ' ') {
@@ -149,22 +168,30 @@ void parse_command(struct History* history) {
                 help_type = command.tokens[i + 1];
             else
                 help_type = "help";
-
+            
+            char* temp_txt = ".txt";
+            char* path_with_help = "/help/";
+            char* help_full_path = concat(original_path, concat(path_with_help, concat(help_type, temp_txt)));
+            
             char str[1000];
-            txtPointer = fopen(strcat(original_path, strcat("/help/", strcat(help_type, ".txt"))), "r");
+            txtPointer = fopen(help_full_path, "r");
             if (txtPointer == NULL)
                 printf("Some help file failed to open.\n");
             else
             {
-                while(!feof(txtPointer)) {
+                while(1) {
                     fgets(str, 999, txtPointer);
+                    if (feof(txtPointer))
+                    {
+                        break;
+                    }
                     printf("%s", str);
                 }
             }
             fclose(txtPointer);
+            command.built_in = 0;
             command.type = help;
         }
-        
     }
     save_command(history);
 }
