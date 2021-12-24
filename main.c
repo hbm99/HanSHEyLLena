@@ -26,7 +26,7 @@ void free_memory() {
 void INThandler_initial(int signal){
   
     write(STDIN_FILENO, "\n", 1);
-    write(STDOUT_FILENO, "prompt$ ", 9);
+    write(STDOUT_FILENO, "prompt $ ", 9);
     prompt_ready= 1;
 
 }
