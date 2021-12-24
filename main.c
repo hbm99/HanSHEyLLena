@@ -241,7 +241,7 @@ int main(int argc, const char * argv[]) {
                 }
                 else if (current_command.type == quit) {
                     running = 0;
-                    free_memory();
+                    //free_memory();
                     kill(getppid(), SIGKILL);
                 }
                 exit(0);
