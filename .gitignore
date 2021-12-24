@@ -1,4 +1,4 @@
 *.out
-history.txt
 *.vscode
 *.DS_store
+history.txt
