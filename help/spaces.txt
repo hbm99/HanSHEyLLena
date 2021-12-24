@@ -1,0 +1,1 @@
+Se hace uso del método creado "tokenize" que garantiza la separación de palabras, insensible a la cantidad de caracteres ' '. Se usa en este la función "strtok" de la librería <string.h>, que básicamente separa una cadena de caracteres a través del delimitador(delimitadores) establecido(s), en este caso, el char ' '.

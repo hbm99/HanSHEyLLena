@@ -1,0 +1,1 @@
+hanSHEyLLena tiene la posibilidad de recibir múltiples pipes, cada uno de los comandos indicados se guardará en el historial de comandos, con la excepción de cuando se escribe con ' ' delante de este, como se indica en la orientación. 
