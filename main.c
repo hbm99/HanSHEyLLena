@@ -23,11 +23,17 @@ void free_memory() {
     free(original_path);
 }
 
+void pint_prompt(){
+
+    write(STDOUT_FILENO, "prompt $ ", 9);
+    prompt_ready= 1;
+
+}
+
 void INThandler_initial(int signal){
   
     write(STDIN_FILENO, "\n", 1);
-    write(STDOUT_FILENO, "prompt $ ", 9);
-    prompt_ready= 1;
+    pint_prompt();
 
 }
 
@@ -38,12 +44,11 @@ void  INThandler(int sig)
     if (parent_id == iPid){
 
         write(STDIN_FILENO, "\n", 1);
-        write(STDOUT_FILENO, "prompt $ ", 9);
-        prompt_ready= 1;
+        pint_prompt();
 
     }
 
-    if (signal_counter >= 2 && parent_id != iPid)
+    if (signal_counter >= 1 && parent_id != iPid)
     {  
 
         kill(iPid, SIGKILL);
@@ -58,7 +63,6 @@ void  INThandler(int sig)
     }      
     
 }
-
 
 
 //Initializing history
@@ -164,7 +168,7 @@ int main(int argc, const char * argv[]) {
 
     while (running) {
 
-        if (!prompt_ready) write(STDOUT_FILENO, "prompt $ ", 9);
+        if (!prompt_ready) pint_prompt();
         
         char** list_commands_texts = parse_line();
 
