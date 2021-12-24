@@ -7,8 +7,10 @@ int running = 1;
 int commands_counter;
 struct History history;
 struct Command* command_list;
-int signal_counter = 1;
+int signal_counter;
 char* original_path;
+pid_t parent_id;
+int prompt_ready = 0; 
 
 
 void init_history(void);
@@ -21,20 +23,43 @@ void free_memory() {
     free(original_path);
 }
 
-void  INThandler(int sig)
-{  
-    signal(sig, SIG_IGN);
-    if (signal_counter == 2)
-    {
-        pid_t iPid = getpid(); 
-        kill(iPid, SIGKILL);
-    }
-    else 
-    {
-        signal_counter++;
-        signal(SIGINT, INThandler);
-    }      
+void INThandler_initial(int signal){
+  
+    write(STDIN_FILENO, "\n", 1);
+    write(STDOUT_FILENO, "prompt$ ", 9);
+    prompt_ready= 1;
+
 }
+
+void  INThandler(int sig)
+{
+    pid_t iPid = getpid(); 
+
+    if (parent_id == iPid){
+
+        write(STDIN_FILENO, "\n", 1);
+        write(STDOUT_FILENO, "prompt$ ", 9);
+        prompt_ready= 1;
+
+    }
+
+    if (signal_counter >= 2 && parent_id != iPid)
+    {  
+
+        kill(iPid, SIGKILL);
+
+    }
+    else{
+
+        signal(sig, SIG_IGN);      
+        signal_counter++;
+        signal(sig, INThandler);
+
+    }      
+    
+}
+
+
 
 //Initializing history
 void init_history() {
@@ -129,7 +154,9 @@ int** init_multipipe() {
 
 int main(int argc, const char * argv[]) {
 
-    signal(SIGINT, INThandler);
+    signal(SIGINT, INThandler_initial);
+
+    prompt_ready = 0;
 
     original_path = getcwd(original_path, 500);
     
@@ -137,13 +164,14 @@ int main(int argc, const char * argv[]) {
 
     while (running) {
 
-        write(STDOUT_FILENO, "prompt $ ", 9);
+        if(!prompt_ready) write(STDOUT_FILENO, "prompt$ ", 9);
         
         char** list_commands_texts = parse_line();
 
         fill_command_list(list_commands_texts);
 
         int** pipeline = init_multipipe();
+
         int pipes_counter = commands_counter - 1;
 
         int command_index = 0;
@@ -151,8 +179,14 @@ int main(int argc, const char * argv[]) {
         {
             struct Command current_command = command_list[i];
 
+            signal_counter = 0;
+
             int pid = fork();
-         
+
+            signal(SIGINT, INThandler);
+
+            prompt_ready = 0;
+
             switch (pid)
             {
             case 0:
@@ -256,8 +290,10 @@ int main(int argc, const char * argv[]) {
             command_index = i;
         }
         for (int i = 0; i <= command_index; i++)
-        {
+        {  
+            parent_id = getpid(); 
             wait(NULL);
+         
         }
     }
     free_memory();
