@@ -1,10 +1,3 @@
-//
-//  main.c
-//  hanSHeyLLena
-//
-//  Created by Hansel Blanco on 9/12/21.
-//
-
 #include <sys/wait.h>
 #include <signal.h>
 #include "command.h"
@@ -12,25 +5,36 @@
 
 int running = 1;
 int commands_counter;
-char* original_path;
 struct History history;
 struct Command* command_list;
 int signal_counter = 1;
+char* original_path;
+
+
+void init_history(void);
+char** parse_line(void);
+int** init_multipipe(void);
+void free_memory(void);
+
+void free_memory() {
+    free(&history);
+    free(command_list);
+    free(original_path);
+}
 
 void  INThandler(int sig)
-{
-   
-        signal(sig, SIG_IGN);
-        if(signal_counter == 2)
-        {
-            pid_t iPid = getpid(); 
-            kill(iPid, SIGKILL);
-        }
-        else{
-            signal_counter++;
-            signal(SIGINT, INThandler);
-        }      
-    
+{  
+    signal(sig, SIG_IGN);
+    if (signal_counter == 2)
+    {
+        pid_t iPid = getpid(); 
+        kill(iPid, SIGKILL);
+    }
+    else 
+    {
+        signal_counter++;
+        signal(SIGINT, INThandler);
+    }      
 }
 
 //Initializing history
@@ -39,7 +43,9 @@ void init_history() {
     history.count = 0;
     history.start_index = 0;
     history.txt_path = (char *)malloc(500);
-    history.txt_path = strcat(original_path, "/history.txt");
+    char* path_to_history = (char*)malloc(sizeof(original_path) + 20);
+    strcpy(path_to_history, original_path);
+    history.txt_path = strcat(path_to_history, "/history.txt");
     
     txtPointer = fopen(history.txt_path, "r");
     
@@ -50,7 +56,7 @@ void init_history() {
         getline(&history.record[i], &length, txtPointer);
         if (strcmp(history.record[i], "") == 0)
             break;
-        history.count++;           
+        history.count++;
     }
     fclose(txtPointer);
 }
@@ -176,43 +182,70 @@ int main(int argc, const char * argv[]) {
                 dup2(current_command.in_fd, STDIN_FILENO);
                 dup2(current_command.out_fd, STDOUT_FILENO);
 
-                if (current_command.type == quit) {
+                if (!current_command.built_in) {
+                    if (execvp(current_command.tokens[0], (char *const *) current_command.tokens) == -1) {
+                        printf("Unknown command \n");
+                    }
+                }
+                else if (current_command.type == hist) {
+                    
+                    char line[50] = {0};
+                    
+                    txtPointer = fopen(history.txt_path, "r");
+                    
+                    if (txtPointer == NULL)
+                        printf("History file failed to open.\n");
+                    else
+                    {
+                        int line_count = 0;
+                        
+                        while(fgets(line, 50, txtPointer) != NULL)
+                        {
+                            printf("%d. %s", ++line_count, line);
+
+                            if (line[strlen(line) - 1] != '\n')
+                                printf("\n");
+                        }
+                    }
+                    fclose(txtPointer);
+                }
+                else if (current_command.type == help)
+                {
+                    char* help_type = "";
+                    if (command.tokens[i + 1] != NULL)
+                        help_type = command.tokens[i + 1];
+                    else
+                        help_type = "help";
+                    
+                    char* temp_txt = ".txt";
+                    char* path_with_help = "/help/";
+                    char* help_full_path = concat(original_path, concat(path_with_help, concat(help_type, temp_txt)));
+                    
+                    char str[1000];
+                    txtPointer = fopen(help_full_path, "r");
+                    if (txtPointer == NULL)
+                        printf("Some help file failed to open.\n");
+                    else
+                    {
+                        while(1) 
+                        {
+                            fgets(str, 999, txtPointer);
+                            if (feof(txtPointer))
+                            {
+                                break;
+                            }
+                            printf("%s", str);
+                        }
+                    }
+                    fclose(txtPointer);
+                }
+                else if (current_command.type == quit) {
                     running = 0;
+                    free_memory();
                     kill(getppid(), SIGKILL);
                 }
-                else {
-                    if (current_command.built_in) {
-                        if (execvp(current_command.tokens[0], (char *const *) current_command.tokens) == -1) {
-                            printf("Unknown command \n");
-                        }
-                    }
-                    else if (current_command.type == hist) {
-                        
-                        char line[50] = {0};
-                        
-                        txtPointer = fopen(history.txt_path, "r");
-                        
-                        if (txtPointer == NULL)
-                            printf("History file failed to open.\n");
-                        else
-                        {
-                            int line_count = 0;
-                            
-                            while(fgets(line, 50, txtPointer) != NULL)
-                            {
-                                printf("%d. %s", ++line_count, line);
-
-                                if (line[strlen(line) - 1] != '\n')
-                                    printf("\n");
-                            }
-
-                            fclose(txtPointer);
-                        }
-                    }
-                    exit(0);
-                }
+                exit(0);
                 break;
-            
             default:
                 if (i < pipes_counter)
                 {
@@ -221,7 +254,7 @@ int main(int argc, const char * argv[]) {
                 break;
             }
             if (current_command.type == unknown) {
-                printf("Unkonwn command \n");
+                printf("Unknown command \n");
             }
             command_index = i;
         }
@@ -230,6 +263,6 @@ int main(int argc, const char * argv[]) {
             wait(NULL);
         }
     }
-
+    free_memory();
     return 0;
 }
