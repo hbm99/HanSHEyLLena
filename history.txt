@@ -1,0 +1,10 @@
+ls
+pwd
+pwd
+ls
+pwd
+pwd
+ping 8.8.8.8
+exit
+ls
+sleep 78
