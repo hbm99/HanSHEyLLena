@@ -38,7 +38,7 @@ void  INThandler(int sig)
     if (parent_id == iPid){
 
         write(STDIN_FILENO, "\n", 1);
-        write(STDOUT_FILENO, "prompt$ ", 9);
+        write(STDOUT_FILENO, "prompt $ ", 9);
         prompt_ready= 1;
 
     }
@@ -164,7 +164,7 @@ int main(int argc, const char * argv[]) {
 
     while (running) {
 
-        if(!prompt_ready) write(STDOUT_FILENO, "prompt$ ", 9);
+        if (!prompt_ready) write(STDOUT_FILENO, "prompt $ ", 9);
         
         char** list_commands_texts = parse_line();
 
