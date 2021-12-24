@@ -225,7 +225,6 @@ int main(int argc, const char * argv[]) {
                     char line[50] = {0};
                     
                     txtPointer = fopen(history.txt_path, "r");
-                    
                     if (txtPointer == NULL)
                         printf("History file failed to open.\n");
                     else
