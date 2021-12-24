@@ -17,7 +17,6 @@ int** init_multipipe(void);
 void free_memory(void);
 
 void free_memory() {
-    free(&history);
     free(command_list);
     free(original_path);
 }
@@ -43,7 +42,7 @@ void init_history() {
     history.count = 0;
     history.start_index = 0;
     history.txt_path = (char *)malloc(500);
-    char* path_to_history = (char*)malloc(sizeof(original_path) + 20);
+    char* path_to_history = (char*)malloc(sizeof(original_path) + 1000);
     strcpy(path_to_history, original_path);
     history.txt_path = strcat(path_to_history, "/history.txt");
     
@@ -241,7 +240,6 @@ int main(int argc, const char * argv[]) {
                 }
                 else if (current_command.type == quit) {
                     running = 0;
-                    //free_memory();
                     kill(getppid(), SIGKILL);
                 }
                 exit(0);
