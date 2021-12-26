@@ -1,0 +1,21 @@
+Integrantes del equipo:
+Sheyla Leyva Sánchez
+Elena Rodríguez Horta
+Hansel Blanco Martí
+
+Funcionalidades implementadas:
+- basic: Funcionalidades básicas ------------------------------------------- 3 puntos
+- multi-pipe: Múltiples tuberías-------------------------------------------- 1 puntos
+- spaces: Cualquier cantidad de espacios entre los comandos y parámetros---- 0.5 puntos 
+- history: Historial de comandos ------------------------------------------- 0.5 puntos
+- ctrl+c: Capturar y enviar señales a los procesos-------------------------- 0.5 puntos
+- help: Ayuda de lo que hace el Shell y las funcionalidades implementadas--- 1 puntos
+
+Total de puntos: 6.5
+
+Comandos built-in implementados:
+- cd 
+- exit
+- history
+- again
+- help

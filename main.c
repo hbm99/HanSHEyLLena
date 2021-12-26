@@ -165,8 +165,6 @@ char** parse_line() {
        text_before_pipe = 0;
     }
     
-    //commands_counter = pipes_counter + 1;
-
     return list_commands_texts;
 }
 
@@ -210,8 +208,6 @@ int main(int argc, const char * argv[]) {
         fill_command_list(list_commands_texts);
 
         int** pipeline = init_multipipe();
-
-        //pipes_counter = commands_counter - 1;
 
         int command_index = 0;
         for (int i = 0; i < commands_counter; i++)

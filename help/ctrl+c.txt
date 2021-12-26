@@ -1,0 +1,17 @@
+13. Implementar la posibilidad de dar Ctrl+C en el prompt y que eso "mate" al proceso que se 
+está ejecutando.
+
+En el shell el dar Ctrl+C, de ninguna manera, va a provocar que se cierre.(1)
+Además dar Ctrl+C con el prompt vacío resultará en un salto de linea donde se imprimirá otro prompt listo para ejecutar un comando.(2)
+Dar Ctrl+C en medio de la ejecución de un proceso dará como resultado la muerte de este (en algunas ocasiones luego de haber hecho Ctrl+C una vez y en otras luego de dos veces).
+
+*Se llama al signal con dos Handlers: Un Handler inicial para el proceso principal del shell, y otro para todos los procesos que se van creando.
+
+	Dentro del Handler inicial se escribe el prompt en caso de ser necesario (esto se realiza con el objetivo de mantener el comportamiento 2)
+	Dentro del Handler de procesos se revisan una serie de condiciones para poder ignorar la señal (en caso de que se pueda) la primera vez que se de Ctrl+C, y matar al proceso la 2da vez.
+	
+ Aclaraciones:
+ 	-La variable signal_counter es el contador para saber cuantas veces se ha tocado el Ctrl+C en un mismo comando. Esta se reinicia antes de cada Fork() para tener la certeza de que está contando los Ctrl+C de un mismo proceso.
+	-En el Handler se llama nuevamente a la funcion signal con el mismo Handler para poder asegurar que el programa siempre estará esperando un Ctrl+C.
+	-El metodo print_prompt() y la variable global prompt_ready se utilizan para mantener la integridad de la funcionalidad (2)
+	

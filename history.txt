@@ -1,9 +1,10 @@
-history
 exit
-hello
 ls
 pwd
+ls
 cd ..
 pwd
-ls
+exit
+help history
+help
 exit

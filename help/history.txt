@@ -1,0 +1,24 @@
+Historial de comandos:
+Para implementar el historial de comandos se ha utilizado una estructura history y un .txt del mismo nombre.
+
+En la estructura history hay un char* "record" donde esta en cada momento la información de los últimos 10 comandos.
+Este char* es una estructura circular, donde start_index indica la posición del comando más antiguo del 
+historial y count la catidad de comandos que hay en el historial. 
+
+
+Para garantizar que el historial se conserve de una ejecución a otra se tiene el .txt donde se guarda siempre
+lo que hay en history record.
+Cuando el shell se ejecuta, se carga del .txt toda la información de ejecuciones previas que se tiene para 
+history record (init history) y con esta consistencia comienza a ejecutarse el shell.  
+
+Cuando se ha terminado parse_command y el comando ya tiene todos sus detalles especificados se salva en el
+historial, excepto si el primer carácter es " "
+Si cuando se va a salvar un comando en el historial este está lleno, entonces se elimina el comando más 
+antiguo del historial y se copia el nuevo. 
+Estos cambios se hacen tanto en la estructura history, en el char* record como en el .txt.
+
+Cuando se ejecuta el comando history se imprimen los comandos guardados en el historial, en orden, comenzando
+por el más antiguo.
+
+Cuando se ejecuta el comando again <k> lo que se hace es mandar a ejecutar el k-esimo comando del Historial si
+existe, llamando a compile_command con lo que hay en history record en esa posición.

@@ -1,0 +1,81 @@
+Funcionalidades básicas:
+
+1. Al ejecutar el programa, debe imprimir un prompt. Siempre debe haber un signo $ al final del prompt y un espacio entre
+este y el comando que se va a escribir.
+
+La ejecución de los comandos se hace dentro de un ciclo while que se ejecuta desde que se corre el proyecto y no se detiene
+mientras no haya un comando que así lo determine. En cada iteración se ejecuta una línea. 
+Al principio de cada iteración del ciclo while se imprime "prompt $ ", así aparecerá cuando se vaya a dar una nueva
+instrucción(escribir una línea y presionar enter). 
+
+2. Debe ejecutar comandos e imprimir la salida de estos
+
+Cuando el shell lee una línea, esta se transforma, convirtiéndola en una lista de comandos. Por cada comando 
+se crea un nuevo proceso utilizando la función fork y luego cada comando se ejecuta según sea o no built in. 
+
+Un comando built in es aquel que se ejecuta internamente en este shell. Los comandos que se ejecutan a través
+del shell de linux no son considerados built in (incluso si para el shell de linux lo son).
+
+Si el comando es built in:
+- Se hacen las especificaciones necesarias en el método "parse_command" de command.c, entre ellas se indica que
+es un comando built in y el tipo de comando que es (Campo type de la estructura command)
+- En el main la ejecución de estos comandos depende de su tipo. Se verifica que tipo es y en consecuencia se
+hace lo que tiene que hacer este comando.
+Ejemplo:
+- Si es de tipo history, que es solo el comando history, entonces se lee del txt y se imprime el hitorial de
+comandos.
+- Si es de tipo help, entonces se carga y se imprime el txt correspondiente
+ Estos son solo algunos ejemplos
+
+Si el comando no es built in:
+- Se hace uso de la función execvp de la familia exec, que sustituye el proceso en curso y carga el nuevo
+proceso. Los parámetros que recibe la función execvp son: el comando que se va a ejecutar y una lista de
+argumentos donde el primer elemento es el comando y termina en NULL.
+- Si la función retorna -1, se ha producido un error
+
+3. Debe poder ejecutarse el comando cd y que cambie el directorio. 
+En el método "parse_command" de command.c, si el comando en cuestión es cd, se cambia el directorio con la 
+función chdir(path) la cual cambia el directorio donde se está trabajando hacia el que se indica con "path".
+El path es el parámetros que recibe el comando cd y que se encuentra en el array tokens en la posición siguiente
+Si no hay parámetros entonces no debe hacer nada.
+
+4. Redirigir entrada y salida estándar de comandos hacia/desde ficheros con '>', '<' y '>>'
+-El comando < (cin) ejecuta el comando especificado a la izquierda usando el archivo especificado en la 
+derecha como stdin..
+
+-El comando > (cout) redirecciona la salida del comando de la parte izquierda del operador hacia el .txt 
+especificado en la parte derecha. En caso de que el .txt no esté vacío se sobrescribe el contenido de este;
+y de no existir dicho .txt, lo crea.
+
+-El comando >> (ccout) realiza las mismas funciones que el operador > con la diferencia de que en caso de que 
+el .txt especificado no esté vacío, en lugar de sobrescribirse, el contenido nuevo se anexa al final.
+
+Esto se garantiza en el método "parse-parse_command" donde una vez identificado un comando de este tipo se
+utiliza la función open para el trabajo con los archivos (leer o escribir en ellos, asignando parámetros 
+O_RDONLY, O_WRONLY, O_APPEND y O_CREAT en dependencia del comando) y se modifican consecuentemente los file 
+descriptors de entrada y salida del comando en cuestión.
+
+5. Usar una tubería '|'
+
+hanSHEyLLena puede redirigir la salida estándar de un comando hacia la entrada de otro a través de la utilización de una tubería.
+Cuando se lee una línea se verifica la presencia de tuberías y si existen, se crea un array donde cada posición corresponde a una tubería.
+En cada posición de este array hay un array de enteros de tamaño 2 donde se guardan los file descriptors de entrada y salida. 
+Para esto se utiliza la función pipe() de C.
+Durante la ejecución, si hay tuberías, se abren, cierran y redireccionan los file descriptors según sea necesario.
+Se utiliza la función dup2 estudiada. 
+
+6. Una vez terminado el comando previo se debe mostrar el prompt nuevamente
+Esto se garantiza por la ejecución del ciclo while
+
+7. Solamente habrá un epacio entre cada uno de los tokens de la entrada
+El shell es insensible a la cantidad de espacios. Se separan los tokens segun la presencia de ' ', no importa
+cuántos sean.
+
+8. 
+a) Si aparece un caracter # el shell debe ignorar desde esse carácter hasta el final de la línea
+La línea se lee completa con la función read y luego se va copiando mientras no haya '#'. A partir del primer
+'#'se deja de copiar, ignorándose así el resto de la línea.
+
+b) El shell debe terminar con el comando exit
+Cuando se escribe el comando exit, que es de tipo quit, se hace running=0 y se cierra la terminal con la 
+función kill

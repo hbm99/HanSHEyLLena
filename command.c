@@ -21,7 +21,7 @@ char* concat(char* str1, char* str2) {
 
 void save_command(struct History* history) {
     
-    if (command.text[0] == ' ') {
+    if (command.text[0] == ' ' || strlen(command.text) == 0) {
         return;
     }
 
@@ -104,6 +104,7 @@ void tokenize(char *text, size_t characters_count) {
 }
 
 void parse_command(struct History* history) {
+
     for (int i = 0; i < 20; ++i) {
         char* token = command.tokens[i];
         if (token == NULL)
@@ -132,6 +133,8 @@ void parse_command(struct History* history) {
             break;
         }
         else if (strlen(token) == 7 && strncmp(token, "history", 7) == 0) {
+            if (i > 0 && strlen(command.tokens[i - 1]) == 4 && strncmp(command.tokens[i - 1], "help", 4) == 0)
+                continue;
             command.type = hist;
             command.built_in = 1;
         }
