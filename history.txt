@@ -1,10 +1,9 @@
-pwd
-ping 8.8.8.8
+history
 exit
+hello
 ls
-sleep 78
-history
-ping 8.8.8.8
-history
+pwd
+cd ..
+pwd
 ls
 exit

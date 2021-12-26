@@ -10,7 +10,8 @@ struct Command* command_list;
 int signal_counter;
 char* original_path;
 pid_t parent_id;
-int prompt_ready = 0; 
+int prompt_ready = 0;
+int pipes_counter;
 
 
 void init_history(void);
@@ -90,13 +91,16 @@ void init_history() {
 }
 
 char** parse_line() {
-        
+    
     char _text[1024];
     ssize_t characters_count = read(STDIN_FILENO, _text, 1024);
     
     // checking if there is a comment (#) or pipes (|) in the line
     char text[characters_count];
-    int pipes_counter = 0;
+    pipes_counter = 0;
+    commands_counter = 0;
+    
+    int cc = 0;
     for (int i = 0; i < characters_count; i++) {
         if (_text[i] == '|') {
             pipes_counter++;
@@ -106,7 +110,23 @@ char** parse_line() {
             break;
         }
         else {
+            cc++;
             text[i] = _text[i];
+        }
+    }
+    
+    characters_count = cc;
+    int balance = 0;
+    for (long i = 0; i < characters_count - 1; i++)
+    {
+        if (text[i] == '|')
+            balance--;
+        else
+            balance = 1;
+        if (balance < 0 || (balance == 0 && i == characters_count - 2))
+        {
+            printf("Unknown command \n");
+            break;
         }
     }
 
@@ -116,10 +136,17 @@ char** parse_line() {
 
     int list_commands_texts_index = 0;
     char* accum = (char*)malloc(characters_count);
+    int text_before_pipe = 0;
+
     for (int i = 0, j = 0; i < characters_count; i++, j++)
     {
         if (text[i] == '|')
-        {
+        {   
+            if (text_before_pipe) {
+                commands_counter++;
+                text_before_pipe = 0;
+            } 
+
             list_commands_texts[list_commands_texts_index] = strcat(accum, "\n");
             j = -1;
             accum = (char*)malloc(characters_count);
@@ -127,10 +154,18 @@ char** parse_line() {
             continue;
         }
         accum[j] = text[i];
+        text_before_pipe = 1;
     }
+    
     list_commands_texts[list_commands_texts_index] = accum;
 
-    commands_counter = pipes_counter + 1;
+    if (text_before_pipe)
+    {
+       commands_counter++;
+       text_before_pipe = 0;
+    }
+    
+    //commands_counter = pipes_counter + 1;
 
     return list_commands_texts;
 }
@@ -148,8 +183,8 @@ void fill_command_list(char** list_commands_texts) {
 int** init_multipipe() {
     
     int** pipeline;
-    pipeline = (int**)malloc((commands_counter - 1) * sizeof(int*));
-    for (int i = 0; i < commands_counter - 1; i++) {
+    pipeline = (int**)malloc((pipes_counter) * sizeof(int*));
+    for (int i = 0; i < pipes_counter; i++) {
         pipeline[i] = (int *) malloc(2 * sizeof(int));
         pipe(pipeline[i]);
     }
@@ -176,7 +211,7 @@ int main(int argc, const char * argv[]) {
 
         int** pipeline = init_multipipe();
 
-        int pipes_counter = commands_counter - 1;
+        //pipes_counter = commands_counter - 1;
 
         int command_index = 0;
         for (int i = 0; i < commands_counter; i++)
@@ -295,9 +330,8 @@ int main(int argc, const char * argv[]) {
         }
         for (int i = 0; i <= command_index; i++)
         {  
-            parent_id = getpid(); 
+            parent_id = getpid();
             wait(NULL);
-         
         }
     }
     free_memory();
